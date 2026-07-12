@@ -1,14 +1,26 @@
 /* Minimalist SVG line chart, hand-rolled to get exactly the look we want:
    a thin line per runner, a small dot at every loop step, and a larger dot on
    each runner's latest record with their initials in the middle.
-   Identity is carried by those initials labels — not by per-runner colours —
-   so every line shares one accent hue and the selected runner is emphasised. */
+   Identity is always carried by those initials labels. On top of that, when no
+   runner is selected each line gets its own colour so the curves are easy to
+   tell apart; selecting a runner switches back to one accent hue with the rest
+   dimmed. */
 
 const Charts = (() => {
   const NS = "http://www.w3.org/2000/svg";
   const W = 640;
   const H = 300;
   const PAD = { top: 20, right: 34, bottom: 34, left: 46 };
+
+  /* Categorical palette for the per-runner colours (up to 12 runners expected).
+     Tuned for the dark surface and ordered so neighbouring hues stay distinct;
+     the initials labels remain the primary identity cue for colour-blind
+     readers. See scratchpad validation against the data-viz colour checks. */
+  const RUNNER_COLORS = [
+    "#009d84", "#758c00", "#b357ad", "#139948",
+    "#9065d0", "#c94f7c", "#5c77df", "#c26300",
+    "#0089d5", "#a57900", "#0097b4", "#ce5342",
+  ];
 
   const el = (name, attrs = {}, text) => {
     const node = document.createElementNS(NS, name);
@@ -125,6 +137,16 @@ const Charts = (() => {
       )
     );
 
+    // Give each runner a stable colour, keyed on participant id so a runner
+    // keeps the same hue across refreshes regardless of leaderboard order.
+    const colorById = {};
+    runners
+      .map((r) => r.participant.id)
+      .sort((a, b) => a - b)
+      .forEach((id, index) => {
+        colorById[id] = RUNNER_COLORS[index % RUNNER_COLORS.length];
+      });
+
     // Draw unselected runners first, then the selected one on top.
     const ordered = [...runners].sort((a, a2) => {
       const aSel = a.participant.id === selectedId ? 1 : 0;
@@ -137,41 +159,44 @@ const Charts = (() => {
       const dim = selectedId !== null && !selected;
       const cls = selected ? "ch-line ch-line--sel" : "ch-line";
       const pts = runner.pts;
+      // Per-runner colour only when nothing is selected; otherwise the accent /
+      // dimmed styling from the CSS classes takes over.
+      const color = selectedId === null ? colorById[runner.participant.id] : null;
 
       // Line
       if (pts.length > 1) {
         const d = pts
           .map((p, i) => `${i === 0 ? "M" : "L"}${sx(p.x)},${sy(p.y)}`)
           .join(" ");
-        svg.appendChild(
-          el("path", { class: cls, d, opacity: dim ? 0.18 : 1 })
-        );
+        const attrs = { class: cls, d, opacity: dim ? 0.18 : 1 };
+        if (color) attrs.style = `stroke:${color}`;
+        svg.appendChild(el("path", attrs));
       }
 
       // Small dot at every step (all but the last)
       pts.slice(0, -1).forEach((p) => {
-        svg.appendChild(
-          el("circle", {
-            class: selected ? "ch-dot ch-dot--sel" : "ch-dot",
-            cx: sx(p.x),
-            cy: sy(p.y),
-            r: 2.6,
-            opacity: dim ? 0.18 : 1,
-          })
-        );
+        const attrs = {
+          class: selected ? "ch-dot ch-dot--sel" : "ch-dot",
+          cx: sx(p.x),
+          cy: sy(p.y),
+          r: 2.6,
+          opacity: dim ? 0.18 : 1,
+        };
+        if (color) attrs.style = `fill:${color}`;
+        svg.appendChild(el("circle", attrs));
       });
 
       // Larger endpoint dot with initials
       const last = pts[pts.length - 1];
       const g = el("g", { opacity: dim ? 0.28 : 1 });
-      g.appendChild(
-        el("circle", {
-          class: selected ? "ch-end ch-end--sel" : "ch-end",
-          cx: sx(last.x),
-          cy: sy(last.y),
-          r: 11,
-        })
-      );
+      const endAttrs = {
+        class: selected ? "ch-end ch-end--sel" : "ch-end",
+        cx: sx(last.x),
+        cy: sy(last.y),
+        r: 11,
+      };
+      if (color) endAttrs.style = `stroke:${color}`;
+      g.appendChild(el("circle", endAttrs));
       g.appendChild(
         el(
           "text",

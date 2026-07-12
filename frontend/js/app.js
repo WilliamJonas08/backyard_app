@@ -138,6 +138,40 @@
     buildLoopTypeControls();
     buildMetricTabs();
     buildSpeedUnitToggle();
+    buildCourseMap();
+  }
+
+  // Course map: one button per loop type that has a map, switching the embedded
+  // calculitineraires.fr route below. Map ids come from the event config.
+  function buildCourseMap() {
+    const wrap = $("#map-loop-type");
+    const frame = $("#course-map");
+    const loops = state.event.loop_types.filter((lt) => lt.map_id);
+    wrap.innerHTML = "";
+    if (loops.length === 0) return;
+
+    const showMap = (mapId) => {
+      frame.src =
+        "https://www.calculitineraires.fr/serviceweb/carteweb.php?id=" +
+        mapId +
+        "&zoom=auto&type=plan&color=FF0000";
+    };
+
+    loops.forEach((loopType, index) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = loopType.label;
+      if (index === 0) btn.classList.add("is-active");
+      btn.addEventListener("click", () => {
+        $$("#map-loop-type button").forEach((b) =>
+          b.classList.toggle("is-active", b === btn)
+        );
+        showMap(loopType.map_id);
+      });
+      wrap.appendChild(btn);
+    });
+
+    showMap(loops[0].map_id);
   }
 
   function renderRegistration(participant) {

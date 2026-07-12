@@ -19,8 +19,15 @@
       <!-- Top bar -->
       <header class="topbar">
         <div class="topbar__brand">
-          <span class="topbar__name" id="event-name">Backyard&nbsp;Race</span>
-          <span class="topbar__sub" id="event-subtitle"></span>
+          <img
+            class="topbar__logo"
+            src="/img/event_logo.jpg"
+            alt="Logo de l'événement"
+          />
+          <div class="topbar__titles">
+            <span class="topbar__name" id="event-name">Backyard&nbsp;Race</span>
+            <span class="topbar__sub" id="event-subtitle"></span>
+          </div>
         </div>
         <div class="live" title="Actualisé automatiquement">
           <span class="live__dot"></span>LIVE
@@ -35,49 +42,77 @@
             <p class="hero__text" id="event-presentation"></p>
           </div>
 
-          <div class="card" id="register-card">
-            <h2 class="card__title">Ton inscription</h2>
-            <div id="register-form-wrap">
-              <p class="muted">
-                Inscris-toi pour apparaître au classement. Un seul coureur par
-                appareil.
-              </p>
-              <form id="register-form" class="form">
-                <label class="field">
-                  <span class="field__label">Prénom et nom</span>
-                  <input
-                    id="register-name"
-                    class="input"
-                    type="text"
-                    autocomplete="name"
-                    placeholder="ex : Jean Dupont"
-                    maxlength="60"
-                    required
-                  />
-                </label>
-                <button class="btn btn--accent" type="submit">
-                  Je m'inscris
-                </button>
-                <p class="form__error" id="register-error"></p>
-              </form>
-            </div>
-            <div id="register-done" class="registered hidden">
-              <div class="registered__badge" id="registered-initials">--</div>
-              <div>
-                <p class="registered__hello">
-                  Inscrit·e en tant que
-                  <strong id="registered-name">—</strong>
-                </p>
-                <button class="btn btn--ghost btn--sm" id="btn-unregister">
-                  Ce n'est pas moi
-                </button>
+          <div class="info-grid">
+            <div class="info-grid__main">
+              <div class="card" id="register-card">
+                <h2 class="card__title">Ton inscription</h2>
+                <div id="register-form-wrap">
+                  <p class="muted">
+                    Inscris-toi pour apparaître au classement. Un seul coureur par
+                    appareil.
+                  </p>
+                  <form id="register-form" class="form">
+                    <label class="field">
+                      <span class="field__label">Prénom et nom</span>
+                      <input
+                        id="register-name"
+                        class="input"
+                        type="text"
+                        autocomplete="name"
+                        placeholder="ex : Jean Dupont"
+                        maxlength="60"
+                        required
+                      />
+                    </label>
+                    <button class="btn btn--accent" type="submit">
+                      Je m'inscris
+                    </button>
+                    <p class="form__error" id="register-error"></p>
+                  </form>
+                </div>
+                <div id="register-done" class="registered hidden">
+                  <div class="registered__badge" id="registered-initials">--</div>
+                  <div>
+                    <p class="registered__hello">
+                      Inscrit·e en tant que
+                      <strong id="registered-name">—</strong>
+                    </p>
+                    <button class="btn btn--ghost btn--sm" id="btn-unregister">
+                      Ce n'est pas moi
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <h2 class="card__title">Ta checklist</h2>
+                <ol class="todolist" id="event-todolist"></ol>
               </div>
             </div>
+
+            <aside class="info-grid__side">
+              <figure class="poster">
+                <img
+                  src="/img/event_poster.jpg"
+                  alt="Affiche officielle de l'événement"
+                />
+              </figure>
+            </aside>
           </div>
 
           <div class="card">
-            <h2 class="card__title">Ta checklist</h2>
-            <ol class="todolist" id="event-todolist"></ol>
+            <h2 class="card__title">Parcours des boucles</h2>
+            <p class="muted">
+              Choisis une boucle pour afficher son tracé.
+            </p>
+            <div class="segmented" id="map-loop-type"></div>
+            <div class="map-frame">
+              <iframe
+                id="course-map"
+                title="Tracé du parcours"
+                allowfullscreen
+              ></iframe>
+            </div>
           </div>
         </section>
 

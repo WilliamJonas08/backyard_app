@@ -24,6 +24,7 @@ class LoopType(BaseModel):
     key: str
     label: str
     distance_km: float
+    map_id: str | None = None   # calculitineraires.fr route id, used to embed the course map (optional).
 
 
 class EventConfig(BaseModel):
@@ -66,8 +67,8 @@ DEFAULT_EVENT = EventConfig(
     subtitle="1ère édition",
     max_loops=10,
     loop_types=[
-        LoopType(key="4km", label="Petit mollet (4 km)", distance_km=4.0),
-        LoopType(key="6.5km", label="Gros mollet (6,5 km)", distance_km=6.5),
+        LoopType(key="4km", label="Petit mollet (4 km)", distance_km=4.0, map_id="1597475"),
+        LoopType(key="6.5km", label="Gros mollet (6,5 km)", distance_km=6.5, map_id="1597473"),
     ],
     presentation=(
         "Bienvenue à la Backyard ! Le principe est simple : une journée conviviale et sportive entre copains"
