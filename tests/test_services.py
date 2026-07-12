@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from app.config import DEFAULT_EVENT
 from app.models import LoopResult, Participant
-from app.services import build_leaderboard, build_series
+from app.services import build_leaderboard, build_series, next_unvalidated_loop
 
 EVENT = DEFAULT_EVENT
 
@@ -88,6 +88,17 @@ def test_leaderboard_tiebreak_on_shorter_time():
     ]
     board = build_leaderboard(participants, results, EVENT)
     assert board[0].participant.name == "Fast"
+
+
+def test_next_unvalidated_loop():
+    # Nothing recorded -> loop 1.
+    assert next_unvalidated_loop(set(), 10) == 1
+    # Sequential recording -> next is max+1.
+    assert next_unvalidated_loop({1, 2, 3}, 10) == 4
+    # A gap (e.g. super-admin deleted loop 2) is filled first.
+    assert next_unvalidated_loop({1, 3}, 10) == 2
+    # All loops done -> None.
+    assert next_unvalidated_loop({1, 2, 3}, 3) is None
 
 
 def test_participant_with_no_results_is_last_with_zeroes():

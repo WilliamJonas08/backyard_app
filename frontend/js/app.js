@@ -25,26 +25,46 @@
     {
       key: "loop_speed_kmh",
       label: "Vitesse / boucle",
-      unit: "km/h",
-      format: (v) => `${v.toFixed(1)}`,
+      isSpeed: true,
       caption: "Vitesse moyenne sur chaque boucle.",
     },
     {
       key: "cumulative_speed_kmh",
       label: "Vitesse moyenne",
-      unit: "km/h",
-      format: (v) => `${v.toFixed(1)}`,
+      isSpeed: true,
       caption: "Vitesse moyenne depuis le départ jusqu'à chaque boucle.",
     },
   ];
+
+  // Speed can be shown as pace (min/km, the runner-friendly default) or km/h.
+  const SPEED_UNITS = {
+    "min/km": {
+      label: "min/km",
+      // km/h -> minutes per km
+      transform: (kmh) => 60 / kmh,
+      // received value is already in minutes/km (decimal) -> "M:SS"
+      format: (paceMin) => {
+        const m = Math.floor(paceMin);
+        const s = Math.round((paceMin - m) * 60);
+        return s === 60 ? `${m + 1}:00` : `${m}:${String(s).padStart(2, "0")}`;
+      },
+    },
+    "km/h": {
+      label: "km/h",
+      transform: (kmh) => kmh,
+      format: (kmh) => kmh.toFixed(1),
+    },
+  };
 
   const state = {
     event: null,
     leaderboard: [],
     series: [],
     metricKey: METRICS[0].key,
+    speedUnit: "min/km",
     selectedId: null,
     loopType: null,
+    nextLoop: null,
     pollTimer: null,
     currentView: "presentation",
   };
@@ -116,8 +136,8 @@
     });
 
     buildLoopTypeControls();
-    buildLoopNumberOptions();
     buildMetricTabs();
+    buildSpeedUnitToggle();
   }
 
   function renderRegistration(participant) {
@@ -217,17 +237,49 @@
     });
   }
 
+  function buildSpeedUnitToggle() {
+    const wrap = $("#speed-unit");
+    wrap.innerHTML = "";
+    Object.entries(SPEED_UNITS).forEach(([key, unit]) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = unit.label;
+      btn.className = key === state.speedUnit ? "is-active" : "";
+      btn.addEventListener("click", () => {
+        state.speedUnit = key;
+        buildSpeedUnitToggle();
+        renderChart();
+      });
+      wrap.appendChild(btn);
+    });
+  }
+
   function renderChart() {
     const metric = METRICS.find((m) => m.key === state.metricKey);
+    const isSpeed = Boolean(metric.isSpeed);
+
+    // The unit toggle is only relevant for speed metrics.
+    $("#unit-toggle").classList.toggle("hidden", !isSpeed);
+
+    let format = metric.format;
+    let transform = null;
+    let unitLabel = "";
+    if (isSpeed) {
+      const unit = SPEED_UNITS[state.speedUnit];
+      transform = unit.transform;
+      format = unit.format;
+      unitLabel = ` (${unit.label})`;
+    }
+
     Charts.render($("#chart"), {
       series: state.series,
       metricKey: metric.key,
       maxLoops: state.event ? state.event.max_loops : 10,
-      formatY: (v) => metric.format(v),
+      formatY: (v) => format(v),
+      transform,
       selectedId: state.selectedId,
     });
-    const unit = metric.unit ? ` (${metric.unit})` : "";
-    $("#chart-caption").textContent = metric.caption + unit;
+    $("#chart-caption").textContent = metric.caption + unitLabel;
   }
 
   // Registration events -----------------------------------------------------
@@ -277,17 +329,6 @@
     });
   }
 
-  function buildLoopNumberOptions() {
-    const select = $("#result-loop");
-    select.innerHTML = "";
-    for (let i = 1; i <= state.event.max_loops; i++) {
-      const opt = document.createElement("option");
-      opt.value = i;
-      opt.textContent = `Boucle ${i}`;
-      select.appendChild(opt);
-    }
-  }
-
   async function populateParticipantSelect() {
     const select = $("#result-participant");
     const current = select.value;
@@ -299,8 +340,42 @@
       opt.textContent = p.name;
       select.appendChild(opt);
     });
-    if (current) select.value = current;
+    if (current && participants.some((p) => String(p.id) === current))
+      select.value = current;
     else select.selectedIndex = 0;
+    await refreshNextLoop();
+  }
+
+  // Fetch the runner's next unvalidated loop and reflect it in the UI. Admins
+  // never pick the loop — the server always records this one.
+  async function refreshNextLoop() {
+    const banner = $("#next-loop-banner");
+    const value = $("#next-loop-value");
+    const submit = $("#result-form").querySelector('button[type="submit"]');
+    const participantId = parseInt($("#result-participant").value, 10);
+
+    if (!participantId) {
+      state.nextLoop = null;
+      banner.classList.remove("next-loop--done");
+      value.textContent = "—";
+      submit.disabled = true;
+      return;
+    }
+    try {
+      const info = await API.getNextLoop(participantId);
+      state.nextLoop = info.next_loop;
+      if (info.next_loop === null) {
+        banner.classList.add("next-loop--done");
+        value.textContent = `Terminé (${info.max_loops}/${info.max_loops})`;
+        submit.disabled = true;
+      } else {
+        banner.classList.remove("next-loop--done");
+        value.textContent = `Boucle ${info.next_loop} / ${info.max_loops}`;
+        submit.disabled = false;
+      }
+    } catch (err) {
+      toast(err.message, true);
+    }
   }
 
   function initAdmin() {
@@ -309,6 +384,9 @@
     participated.addEventListener("change", () => {
       $("#participation-fields").classList.toggle("hidden", !participated.checked);
     });
+
+    // Selecting a runner reveals which loop will be recorded next.
+    $("#result-participant").addEventListener("change", refreshNextLoop);
 
     // Admin login
     $("#admin-login").addEventListener("submit", async (e) => {
@@ -333,7 +411,7 @@
       $("#admin-password").value = "";
     });
 
-    // Record a result
+    // Record a result (server picks the loop = next unvalidated one)
     $("#result-form").addEventListener("submit", async (e) => {
       e.preventDefault();
       $("#result-msg").textContent = "";
@@ -342,10 +420,14 @@
         $("#result-msg").textContent = "Choisis un coureur.";
         return;
       }
+      if (state.nextLoop === null) {
+        $("#result-msg").textContent =
+          "Toutes les boucles de ce coureur sont déjà enregistrées.";
+        return;
+      }
       const didRun = $("#result-participated").checked;
       const body = {
         participant_id: participantId,
-        loop_number: parseInt($("#result-loop").value, 10),
         participated: didRun,
         loop_type: didRun ? state.loopType : null,
         time_seconds: didRun ? readTimeInput() : null,
@@ -359,10 +441,9 @@
         toast("Boucle enregistrée ✓");
         $("#result-minutes").value = "";
         $("#result-seconds").value = "";
-        // Advance to the next loop for quick sequential entry.
-        const loopSel = $("#result-loop");
-        if (loopSel.selectedIndex < loopSel.options.length - 1)
-          loopSel.selectedIndex += 1;
+        $("#result-participated").checked = true;
+        $("#participation-fields").classList.remove("hidden");
+        await refreshNextLoop(); // advances the banner to the following loop
         refreshSuperRecordsIfVisible();
       } catch (err) {
         $("#result-msg").textContent = err.message;

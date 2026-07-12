@@ -68,14 +68,26 @@ class ParticipantUpdateIn(BaseModel):
 
 
 class LoopResultIn(BaseModel):
-    """Payload an admin submits when validating a runner's loop."""
+    """Payload an admin submits when validating a runner's loop.
+
+    Admins never choose the loop number: the server always records the runner's
+    next unvalidated loop, so a previously validated loop can never be
+    overwritten from the admin panel (that is a super-admin action).
+    """
 
     participant_id: int
-    loop_number: int = Field(ge=1)
     participated: bool = True
     loop_type: str | None = None
     time_seconds: int | None = Field(default=None, ge=0)
     extras: dict[str, Any] = Field(default_factory=dict)
+
+
+class NextLoopOut(BaseModel):
+    """Tells the admin panel which loop it is about to record for a runner."""
+
+    participant_id: int
+    next_loop: int | None
+    max_loops: int
 
 
 class LoopResultUpdateIn(BaseModel):

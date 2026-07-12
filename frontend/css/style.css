@@ -535,6 +535,57 @@ select.input {
   font-size: 0.8rem;
 }
 
+/* Next-loop banner (admin) ------------------------------------------------ */
+.next-loop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-dim);
+  border: 1px solid var(--accent);
+}
+.next-loop--done {
+  background: var(--surface-2);
+  border-color: var(--line);
+}
+.next-loop__label {
+  font-size: 0.8rem;
+  color: var(--ink-2);
+  font-weight: 600;
+}
+.next-loop__value {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--accent);
+}
+.next-loop--done .next-loop__value {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+/* Speed-unit toggle ------------------------------------------------------- */
+.unit-toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.unit-toggle__label {
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+.segmented--sm {
+  flex: 0 0 auto;
+}
+.segmented--sm button {
+  flex: 0 0 auto;
+  padding: 7px 14px;
+  font-size: 0.82rem;
+}
+
 /* Segmented control (loop type) ------------------------------------------- */
 .segmented {
   display: flex;

@@ -32,10 +32,12 @@ const Charts = (() => {
    *   metricKey: field on each point to plot
    *   maxLoops: number of loops on the x-axis
    *   formatY: (value) => string  (axis + caption)
+   *   transform: (rawValue) => value  optional unit conversion (default identity)
    *   selectedId: participant id to emphasise (or null)
    */
   function render(container, opts) {
     const { series, metricKey, maxLoops, formatY, selectedId } = opts;
+    const transform = opts.transform || ((v) => v);
     container.innerHTML = "";
 
     // Collect (loop, value) pairs per runner, dropping null metric values.
@@ -44,7 +46,7 @@ const Charts = (() => {
         participant: s.participant,
         pts: s.points
           .filter((p) => p[metricKey] !== null && p[metricKey] !== undefined)
-          .map((p) => ({ x: p.loop_number, y: p[metricKey] })),
+          .map((p) => ({ x: p.loop_number, y: transform(p[metricKey]) })),
       }))
       .filter((r) => r.pts.length > 0);
 

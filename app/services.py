@@ -110,6 +110,18 @@ def build_leaderboard(
     return unranked
 
 
+def next_unvalidated_loop(recorded: set[int], max_loops: int) -> int | None:
+    """Smallest loop number in [1, max_loops] not yet recorded, else ``None``.
+
+    Using the first gap (rather than max+1) keeps things correct even if a
+    super-admin deleted a loop in the middle.
+    """
+    for loop in range(1, max_loops + 1):
+        if loop not in recorded:
+            return loop
+    return None
+
+
 def _group_results(results: list[LoopResult]) -> dict[int, list[LoopResult]]:
     grouped: dict[int, list[LoopResult]] = {}
     for result in results:

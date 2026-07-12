@@ -182,6 +182,54 @@ class Repository:
             ).fetchone()
         return self._result(row)
 
+    def insert_result(
+        self,
+        *,
+        participant_id: int,
+        loop_number: int,
+        participated: bool,
+        loop_type: str | None,
+        time_seconds: int | None,
+        extras: dict,
+    ) -> LoopResult:
+        """Insert a brand-new loop result.
+
+        Unlike :meth:`upsert_result`, this never overwrites an existing record:
+        the ``UNIQUE (participant_id, loop_number)`` constraint raises
+        ``sqlite3.IntegrityError`` if the loop is already recorded. Admins go
+        through here, so they can only ever *add* the next loop.
+        """
+        with self._connect() as conn:
+            cur = conn.execute(
+                """
+                INSERT INTO loop_results
+                    (participant_id, loop_number, participated, loop_type,
+                     time_seconds, extras)
+                VALUES (?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    participant_id,
+                    loop_number,
+                    int(participated),
+                    loop_type,
+                    time_seconds,
+                    json.dumps(extras),
+                ),
+            )
+            row = conn.execute(
+                "SELECT * FROM loop_results WHERE id = ?", (cur.lastrowid,)
+            ).fetchone()
+        return self._result(row)
+
+    def recorded_loop_numbers(self, participant_id: int) -> set[int]:
+        """Loop numbers already validated for a runner (participation or not)."""
+        with self._connect() as conn:
+            rows = conn.execute(
+                "SELECT loop_number FROM loop_results WHERE participant_id = ?",
+                (participant_id,),
+            ).fetchall()
+        return {row["loop_number"] for row in rows}
+
     def get_result(self, result_id: int) -> LoopResult | None:
         with self._connect() as conn:
             row = conn.execute(

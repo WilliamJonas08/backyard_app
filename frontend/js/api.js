@@ -50,6 +50,10 @@ const API = (() => {
 
     // Admin
     checkAdmin: () => request("GET", "/api/admin/auth/check", { admin: true }),
+    getNextLoop: (participantId) =>
+      request("GET", `/api/admin/participants/${participantId}/next-loop`, {
+        admin: true,
+      }),
     recordResult: (body) =>
       request("POST", "/api/admin/results", { body, admin: true }),
     listResults: () => request("GET", "/api/admin/results", { admin: true }),

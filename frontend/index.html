@@ -101,6 +101,10 @@
               Touche un coureur du classement pour le mettre en avant.
             </p>
             <div class="metric-tabs" id="metric-tabs"></div>
+            <div class="unit-toggle hidden" id="unit-toggle">
+              <span class="unit-toggle__label">Unité</span>
+              <div class="segmented segmented--sm" id="speed-unit"></div>
+            </div>
             <div class="chart-wrap">
               <div id="chart" class="chart"></div>
             </div>
@@ -145,16 +149,15 @@
                   <select id="result-participant" class="input" required></select>
                 </label>
 
-                <div class="field-row">
-                  <label class="field">
-                    <span class="field__label">Boucle n°</span>
-                    <select id="result-loop" class="input" required></select>
-                  </label>
-                  <label class="field field--check">
-                    <input type="checkbox" id="result-participated" checked />
-                    <span>A couru cette boucle</span>
-                  </label>
+                <div class="next-loop" id="next-loop-banner">
+                  <span class="next-loop__label">Prochaine boucle à valider</span>
+                  <span class="next-loop__value" id="next-loop-value">—</span>
                 </div>
+
+                <label class="field field--check">
+                  <input type="checkbox" id="result-participated" checked />
+                  <span>A couru cette boucle</span>
+                </label>
 
                 <div id="participation-fields">
                   <div class="field">
