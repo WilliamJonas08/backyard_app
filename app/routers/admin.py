@@ -172,6 +172,16 @@ def list_results(repo: Repository = Depends(get_repository)) -> list[LoopResult]
     return repo.list_results()
 
 
+@router.delete(
+    "/database",
+    status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=[Depends(require_superadmin)],
+)
+def reset_database(repo: Repository = Depends(get_repository)) -> None:
+    """Super-admin: wipe all participants and results for a clean slate."""
+    repo.reset()
+
+
 @router.put(
     "/participants/{participant_id}",
     response_model=Participant,

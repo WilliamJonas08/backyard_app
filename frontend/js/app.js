@@ -658,6 +658,25 @@
         $("#super-error").textContent = err.message;
       }
     });
+
+    // Super-admin: wipe the whole database (clean slate before the event).
+    $("#btn-reset-db").addEventListener("click", async () => {
+      const confirmed = confirm(
+        "Réinitialiser toute la base ?\n\n" +
+          "Tous les coureurs et tous les résultats seront définitivement " +
+          "supprimés. Cette action est irréversible."
+      );
+      if (!confirmed) return;
+      try {
+        await API.resetDatabase();
+        toast("Base de données réinitialisée ✓");
+        renderRecords();
+        populateParticipantSelect();
+        if (state.currentView === "results") refreshResults();
+      } catch (err) {
+        toast(err.message, true);
+      }
+    });
   }
 
   function readTimeInput() {

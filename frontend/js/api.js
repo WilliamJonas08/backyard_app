@@ -65,6 +65,8 @@ const API = (() => {
       request("PUT", `/api/admin/results/${id}`, { body, superadmin: true }),
     deleteResult: (id) =>
       request("DELETE", `/api/admin/results/${id}`, { superadmin: true }),
+    resetDatabase: () =>
+      request("DELETE", "/api/admin/database", { superadmin: true }),
 
     // Password helpers
     getAdminPw,

@@ -58,6 +58,19 @@ class Repository:
         with self._connect() as conn:
             conn.executescript(SCHEMA)
 
+    def reset(self) -> None:
+        """Wipe all data — every participant and loop result.
+
+        Used by the super-admin to start from a clean slate before the event.
+        The id counters are reset too, so the first new runner is #1 again.
+        """
+        with self._connect() as conn:
+            conn.execute("DELETE FROM loop_results")
+            conn.execute("DELETE FROM participants")
+            conn.execute(
+                "DELETE FROM sqlite_sequence WHERE name IN ('participants', 'loop_results')"
+            )
+
     # Row -> model mappers --------------------------------------------------
     @staticmethod
     def _participant(row: sqlite3.Row) -> Participant:
