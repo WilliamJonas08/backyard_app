@@ -64,16 +64,15 @@ class Settings(BaseModel):
 # they stay out of source control (see .env.example / PERSONAL_TODO.md).
 DEFAULT_EVENT = EventConfig(
     name="Backyard",
-    subtitle="1ère édition",
+    subtitle="1ère édition ❤️",
     max_loops=10,
     loop_types=[
         LoopType(key="4km", label="Petit mollet (4 km)", distance_km=4.0, map_id="1597475"),
         LoopType(key="6.5km", label="Gros mollet (6,5 km)", distance_km=6.5, map_id="1597473"),
     ],
     presentation=(
-        "Bienvenue à la Backyard ! Le principe est simple : une journée conviviale et sportive entre copains"
-        "avec un départ sur une boucle à chaque heure, jusqu'à 10 boucles. Tu choisis initialement ta boucle au début de l'évènement (petit ou gros mollet)."
-        "Tu pourras éventuellement changer de catégorie ou te reposer à certains moments." 
+        "Bienvenue à la Backyard ! Le principe est simple : une journée conviviale et sportive entre copains avec un départ sur une boucle à chaque heure, jusqu'à 10 boucles ! "
+        "Tu choisis initialement ta boucle au début de l'évènement (petit ou gros mollet) et tu pourras éventuellement changer ou te reposer à certains moments. " 
         "À toi de gérer ton effort et de grimper au classement au fil de la journée !"
     ),
     todolist=[

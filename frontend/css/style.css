@@ -406,6 +406,18 @@ body {
   border: 0;
 }
 
+/* Static site plan (start/finish, water points, toilets). */
+.site-map {
+  margin: 12px 0 0;
+}
+.site-map img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+}
+
 /* Forms ------------------------------------------------------------------- */
 .form {
   display: flex;
