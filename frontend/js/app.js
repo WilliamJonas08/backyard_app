@@ -6,6 +6,8 @@
 (() => {
   const POLL_MS = 10000;
   const ME_KEY = "backyard_participant_id";
+  const THEME_KEY = "backyard_theme";
+  const WEIGHT_KEY = "backyard_weight_kg";
 
   const METRICS = [
     {
@@ -33,6 +35,12 @@
       label: "Vitesse moyenne",
       isSpeed: true,
       caption: "Vitesse moyenne depuis le départ jusqu'à chaque boucle.",
+    },
+    {
+      key: "gourmandise",
+      label: "Gourmandise",
+      isGourmandise: true,
+      caption: "Ce que tes calories dépensées représentent.",
     },
   ];
 
@@ -62,11 +70,15 @@
     series: [],
     metricKey: METRICS[0].key,
     speedUnit: "min/km",
+    gourmandiseProduct: GOURMANDISE.PRODUCTS[0].key,
     selectedId: null,
     loopType: null,
     nextLoop: null,
     pollTimer: null,
     currentView: "presentation",
+    theme: "dark",
+    weightKg: null,
+    me: null,
   };
 
   const $ = (sel) => document.querySelector(sel);
@@ -89,6 +101,93 @@
     t.classList.add("is-visible");
     clearTimeout(toast._timer);
     toast._timer = setTimeout(() => t.classList.remove("is-visible"), 2600);
+  }
+
+  // Settings menu (theme + weight) ------------------------------------------
+  function loadSettings() {
+    const savedTheme = localStorage.getItem(THEME_KEY);
+    applyTheme(savedTheme === "light" ? "light" : "dark");
+    const savedWeight = parseFloat(localStorage.getItem(WEIGHT_KEY));
+    state.weightKg =
+      Number.isFinite(savedWeight) && savedWeight > 0 ? savedWeight : null;
+  }
+
+  function applyTheme(theme) {
+    state.theme = theme;
+    document.documentElement.setAttribute("data-theme", theme);
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute("content", theme === "light" ? "#f4f5f7" : "#0b0b0f");
+  }
+
+  function initMenu() {
+    const menu = $("#menu");
+    const btn = $("#menu-btn");
+    const panel = $("#menu-panel");
+    const setOpen = (open) => {
+      panel.classList.toggle("hidden", !open);
+      btn.setAttribute("aria-expanded", open ? "true" : "false");
+    };
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      setOpen(panel.classList.contains("hidden"));
+    });
+    // Clicks inside the panel must not bubble up to the outside-click handler.
+    panel.addEventListener("click", (e) => e.stopPropagation());
+    document.addEventListener("click", (e) => {
+      if (!menu.contains(e.target)) setOpen(false);
+    });
+
+    buildThemeToggle();
+    initWeightInput();
+    renderMenuAlert();
+  }
+
+  function buildThemeToggle() {
+    const wrap = $("#theme-toggle");
+    wrap.innerHTML = "";
+    const themes = [
+      ["dark", "Sombre"],
+      ["light", "Clair"],
+    ];
+    themes.forEach(([key, label]) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = label;
+      btn.className = key === state.theme ? "is-active" : "";
+      btn.addEventListener("click", () => {
+        applyTheme(key);
+        localStorage.setItem(THEME_KEY, key);
+        buildThemeToggle();
+      });
+      wrap.appendChild(btn);
+    });
+  }
+
+  function initWeightInput() {
+    const input = $("#weight-input");
+    if (state.weightKg) input.value = state.weightKg;
+    input.addEventListener("change", () => {
+      const value = parseFloat(input.value);
+      if (Number.isFinite(value) && value > 0) {
+        state.weightKg = value;
+        localStorage.setItem(WEIGHT_KEY, String(value));
+      } else {
+        state.weightKg = null;
+        localStorage.removeItem(WEIGHT_KEY);
+        input.value = "";
+      }
+      renderMenuAlert();
+      if (state.currentView === "results") renderChart();
+    });
+  }
+
+  // Red dot on the menu button when a useful setting (weight) is still missing.
+  function renderMenuAlert() {
+    $("#menu-alert").classList.toggle("hidden", state.weightKg !== null);
+  }
+
+  function renderMenuInitials() {
+    $("#menu-initials").textContent = state.me ? state.me.initials : "⚙";
   }
 
   // Navigation --------------------------------------------------------------
@@ -138,6 +237,7 @@
     buildLoopTypeControls();
     buildMetricTabs();
     buildSpeedUnitToggle();
+    buildGourmandiseToggle();
     buildCourseMap();
   }
 
@@ -175,6 +275,7 @@
   }
 
   function renderRegistration(participant) {
+    state.me = participant || null;
     const hasMe = Boolean(participant);
     $("#register-form-wrap").classList.toggle("hidden", hasMe);
     $("#register-done").classList.toggle("hidden", !hasMe);
@@ -182,6 +283,7 @@
       $("#registered-name").textContent = participant.name;
       $("#registered-initials").textContent = participant.initials;
     }
+    renderMenuInitials();
   }
 
   async function loadMe() {
@@ -288,12 +390,36 @@
     });
   }
 
+  function buildGourmandiseToggle() {
+    const wrap = $("#gourmandise-product");
+    wrap.innerHTML = "";
+    GOURMANDISE.PRODUCTS.forEach((product) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = `${product.emoji} ${product.label}`;
+      btn.className = product.key === state.gourmandiseProduct ? "is-active" : "";
+      btn.addEventListener("click", () => {
+        state.gourmandiseProduct = product.key;
+        buildGourmandiseToggle();
+        renderChart();
+      });
+      wrap.appendChild(btn);
+    });
+  }
+
   function renderChart() {
     const metric = METRICS.find((m) => m.key === state.metricKey);
     const isSpeed = Boolean(metric.isSpeed);
+    const isGourmandise = Boolean(metric.isGourmandise);
 
-    // The unit toggle is only relevant for speed metrics.
+    // Each metric family reveals its own control.
     $("#unit-toggle").classList.toggle("hidden", !isSpeed);
+    $("#gourmandise-toggle").classList.toggle("hidden", !isGourmandise);
+
+    if (isGourmandise) {
+      renderGourmandiseChart(metric);
+      return;
+    }
 
     let format = metric.format;
     let transform = null;
@@ -314,6 +440,38 @@
       selectedId: state.selectedId,
     });
     $("#chart-caption").textContent = metric.caption + unitLabel;
+  }
+
+  // Gourmandise is a personal metric: it turns *your* burned calories
+  // (≈ weight × distance) into a count of treats. It needs the device runner's
+  // weight, so it only plots that runner and asks for the weight when missing.
+  function renderGourmandiseChart(metric) {
+    const chart = $("#chart");
+    const caption = $("#chart-caption");
+    const product = GOURMANDISE.findProduct(state.gourmandiseProduct);
+
+    if (!state.me || !state.weightKg) {
+      const reason = state.me
+        ? "Renseigne ton poids"
+        : "Inscris-toi puis renseigne ton poids";
+      chart.innerHTML = `<p class="empty">${reason} dans le menu (en haut à gauche) pour afficher cette métrique.</p>`;
+      caption.textContent = metric.caption;
+      return;
+    }
+
+    const mySeries = state.series.filter(
+      (s) => s.participant.id === state.me.id
+    );
+    Charts.render(chart, {
+      series: mySeries,
+      metricKey: "cumulative_distance_km",
+      maxLoops: state.event ? state.event.max_loops : 10,
+      formatY: (v) => v.toFixed(1),
+      transform: (distanceKm) =>
+        GOURMANDISE.caloriesBurned(state.weightKg, distanceKm) / product.kcal,
+      selectedId: null,
+    });
+    caption.textContent = `Équivalent en ${product.emoji} ${product.label} de tes calories dépensées (≈ ${state.weightKg} kg × distance).`;
   }
 
   // Registration events -----------------------------------------------------
@@ -658,11 +816,13 @@
 
   // Boot --------------------------------------------------------------------
   async function init() {
+    loadSettings();
     $$(".tab").forEach((tab) =>
       tab.addEventListener("click", () => switchView(tab.dataset.target))
     );
     initRegistration();
     initAdmin();
+    initMenu();
     try {
       await loadEvent();
       await loadMe();

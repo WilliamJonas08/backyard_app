@@ -18,7 +18,8 @@
   --muted: #7a7a88;
 
   /* Accent (sporty lime) + supporting */
-  --accent: #c6ff3f;
+  --accent: #c6ff3f; /* accent fills (dark text sits on top) */
+  --accent-text: #c6ff3f; /* accent used as text/border on a surface */
   --accent-ink: #0b0b0f; /* text on accent fills */
   --accent-dim: rgba(198, 255, 63, 0.16);
   --gold: #f5c451;
@@ -26,12 +27,38 @@
   --bronze: #d8905a;
 
   --danger: #e66767;
+  --bar-bg: rgba(11, 11, 15, 0.9); /* sticky topbar / tabbar background */
   --radius: 18px;
   --radius-sm: 12px;
   --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
   --tabbar-h: 66px;
 
   --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  color-scheme: dark;
+}
+
+/* Light theme. Only the palette roles change; the lime accent stays as a fill,
+   while accent-as-text switches to a darker green that stays legible on light
+   surfaces. */
+:root[data-theme="light"] {
+  --plane: #f4f5f7;
+  --surface: #ffffff;
+  --surface-2: #eef0f4;
+  --line: #dde0e6;
+  --grid: #e7e9ef;
+  --baseline: #c9ccd4;
+
+  --ink: #14141a;
+  --ink-2: #4a4a55;
+  --muted: #7a7a88;
+
+  --accent-text: #4a7a00;
+  --accent-dim: rgba(120, 170, 0, 0.16);
+  --bar-bg: rgba(244, 245, 247, 0.85);
+  --shadow: 0 10px 30px rgba(20, 20, 30, 0.1);
+
+  color-scheme: light;
 }
 
 * {
@@ -78,7 +105,8 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: calc(env(safe-area-inset-top) + 14px) 20px 14px;
-  background: linear-gradient(180deg, rgba(11, 11, 15, 0.96), rgba(11, 11, 15, 0.82));
+  gap: 12px;
+  background: var(--bar-bg);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--line);
 }
@@ -122,7 +150,7 @@ body {
   font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.14em;
-  color: var(--accent);
+  color: var(--accent-text);
   padding: 5px 10px;
   border: 1px solid var(--accent-dim);
   border-radius: 999px;
@@ -131,7 +159,7 @@ body {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--accent-text);
   box-shadow: 0 0 0 0 rgba(198, 255, 63, 0.6);
   animation: pulse 1.8s infinite;
 }
@@ -145,6 +173,131 @@ body {
   100% {
     box-shadow: 0 0 0 0 rgba(198, 255, 63, 0);
   }
+}
+
+/* Settings menu (top-left) ------------------------------------------------ */
+.menu {
+  position: relative;
+  flex-shrink: 0;
+}
+.menu__btn {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  color: var(--ink);
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: border-color 0.15s, background 0.15s;
+}
+.menu__btn[aria-expanded="true"] {
+  border-color: var(--accent-text);
+}
+.menu__alert {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--danger);
+  border: 2px solid var(--plane);
+}
+.menu__panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 40;
+  width: 250px;
+  max-width: 78vw;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.menu__section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.menu__label {
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Hoverable info hint ("i" in a circle) ----------------------------------- */
+.info {
+  position: relative;
+  display: inline-flex;
+}
+.info__dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 700;
+  font-style: italic;
+  display: grid;
+  place-items: center;
+  cursor: help;
+}
+.info__tip {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 50;
+  width: 210px;
+  background: var(--ink);
+  color: var(--plane);
+  font-size: 0.76rem;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s;
+}
+.info:hover .info__tip,
+.info:focus .info__tip,
+.info:focus-within .info__tip {
+  opacity: 1;
+}
+
+/* Weight input (menu) ----------------------------------------------------- */
+.weight-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.weight-input .input {
+  flex: 1;
+  min-width: 0;
+}
+.weight-input__unit {
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 0.9rem;
 }
 
 .content {
@@ -290,7 +443,7 @@ body {
 .field--check input {
   width: 20px;
   height: 20px;
-  accent-color: var(--accent);
+  accent-color: var(--accent-text);
 }
 
 .input {
@@ -306,7 +459,7 @@ body {
 }
 .input:focus {
   outline: none;
-  border-color: var(--accent);
+  border-color: var(--accent-text);
   box-shadow: 0 0 0 3px var(--accent-dim);
 }
 select.input {
@@ -338,7 +491,7 @@ select.input {
 }
 .form__msg {
   margin: 0;
-  color: var(--accent);
+  color: var(--accent-text);
   font-size: 0.85rem;
   min-height: 1em;
 }
@@ -366,8 +519,8 @@ select.input {
 }
 .btn--outline {
   background: transparent;
-  color: var(--accent);
-  border: 1px solid var(--accent);
+  color: var(--accent-text);
+  border: 1px solid var(--accent-text);
 }
 .btn--ghost {
   background: var(--surface-2);
@@ -384,7 +537,7 @@ select.input {
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--accent-text);
   background: var(--accent-dim);
   padding: 4px 8px;
   border-radius: 999px;
@@ -439,7 +592,7 @@ select.input {
   height: 26px;
   border-radius: 50%;
   background: var(--accent-dim);
-  color: var(--accent);
+  color: var(--accent-text);
   font-weight: 700;
   font-size: 0.8rem;
   display: grid;
@@ -471,7 +624,7 @@ select.input {
   color: inherit;
 }
 .lb-row.is-selected {
-  border-color: var(--accent);
+  border-color: var(--accent-text);
   background: var(--accent-dim);
 }
 .lb-row__rank {
@@ -606,7 +759,7 @@ select.input {
   padding: 12px 16px;
   border-radius: var(--radius-sm);
   background: var(--accent-dim);
-  border: 1px solid var(--accent);
+  border: 1px solid var(--accent-text);
 }
 .next-loop--done {
   background: var(--surface-2);
@@ -620,7 +773,7 @@ select.input {
 .next-loop__value {
   font-size: 1.15rem;
   font-weight: 800;
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .next-loop--done .next-loop__value {
   color: var(--muted);
@@ -648,6 +801,17 @@ select.input {
   font-size: 0.82rem;
 }
 
+/* The gourmandise products have long labels: stack the control and let the
+   pills wrap onto several rows instead of overflowing. */
+#gourmandise-toggle {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+#gourmandise-product {
+  flex-wrap: wrap;
+}
+
 /* Segmented control (loop type) ------------------------------------------- */
 .segmented {
   display: flex;
@@ -668,8 +832,8 @@ select.input {
 }
 .segmented button.is-active {
   background: var(--accent-dim);
-  border-color: var(--accent);
-  color: var(--accent);
+  border-color: var(--accent-text);
+  color: var(--accent-text);
 }
 
 /* Gate -------------------------------------------------------------------- */
@@ -770,7 +934,7 @@ select.input {
   height: calc(var(--tabbar-h) + env(safe-area-inset-bottom));
   padding-bottom: env(safe-area-inset-bottom);
   display: flex;
-  background: rgba(16, 16, 22, 0.94);
+  background: var(--bar-bg);
   backdrop-filter: blur(12px);
   border-top: 1px solid var(--line);
   z-index: 30;
@@ -799,7 +963,7 @@ select.input {
   font-weight: 600;
 }
 .tab.is-active {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .tab.is-active .tab__icon {
   filter: none;
@@ -860,14 +1024,14 @@ select.input {
   stroke-linecap: round;
 }
 .ch-line--sel {
-  stroke: var(--accent);
+  stroke: var(--accent-text);
   stroke-width: 2.5;
 }
 .ch-dot {
   fill: var(--ink-2);
 }
 .ch-dot--sel {
-  fill: var(--accent);
+  fill: var(--accent-text);
 }
 .ch-end {
   fill: var(--surface-2);
