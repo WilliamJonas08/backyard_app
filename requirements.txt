@@ -1,0 +1,8 @@
+fastapi>=0.110
+uvicorn[standard]>=0.29
+pydantic>=2.6
+
+# Dev / optional
+pytest>=8.0
+httpx>=0.27          # for FastAPI TestClient
+qrcode[pil]>=7.4     # for scripts/generate_qr.py
