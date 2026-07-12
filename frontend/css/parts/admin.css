@@ -1,0 +1,146 @@
+/* Admin — next-loop banner, loop-type segmented control, records, danger zone */
+
+/* Next-loop banner (admin) ------------------------------------------------ */
+.next-loop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-dim);
+  border: 1px solid var(--accent-text);
+}
+.next-loop--done {
+  background: var(--surface-2);
+  border-color: var(--line);
+}
+.next-loop__label {
+  font-size: 0.8rem;
+  color: var(--ink-2);
+  font-weight: 600;
+}
+.next-loop__value {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--accent-text);
+}
+.next-loop--done .next-loop__value {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+/* Segmented control (loop type) ------------------------------------------- */
+.segmented {
+  display: flex;
+  gap: 8px;
+}
+.segmented button {
+  flex: 1;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  color: var(--ink-2);
+  font-weight: 600;
+  font-size: 0.9rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.segmented button.is-active {
+  background: var(--accent-dim);
+  border-color: var(--accent-text);
+  color: var(--accent-text);
+}
+
+/* Super-admin records ----------------------------------------------------- */
+.records {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+}
+.record {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  background: var(--surface-2);
+}
+.record__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+.record__who {
+  font-weight: 700;
+  font-size: 0.92rem;
+}
+.record__detail {
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  margin-top: 2px;
+}
+.record__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+.record__edit {
+  display: none;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.record.is-editing .record__edit {
+  display: flex;
+}
+.record .input {
+  padding: 9px 10px;
+  font-size: 0.9rem;
+}
+.record__edit .time-input .input {
+  width: 72px;
+}
+.icon-btn {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--ink-2);
+  border-radius: 8px;
+  padding: 7px 11px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+.icon-btn--danger {
+  color: var(--danger);
+  border-color: rgba(230, 103, 103, 0.35);
+}
+
+/* Danger zone (super-admin database reset) -------------------------------- */
+.danger-zone {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(230, 103, 103, 0.35);
+  background: rgba(230, 103, 103, 0.08);
+}
+.danger-zone__text {
+  min-width: 0;
+}
+.danger-zone__title {
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--danger);
+}
+.danger-zone .btn--danger {
+  flex-shrink: 0;
+}

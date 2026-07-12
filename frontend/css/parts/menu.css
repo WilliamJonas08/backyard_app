@@ -1,0 +1,126 @@
+/* Settings menu — theme + weight panel, info hint */
+
+/* Settings menu (top-left) ------------------------------------------------ */
+.menu {
+  position: relative;
+  flex-shrink: 0;
+}
+.menu__btn {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  color: var(--ink);
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: border-color 0.15s, background 0.15s;
+}
+.menu__btn[aria-expanded="true"] {
+  border-color: var(--accent-text);
+}
+.menu__alert {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--danger);
+  border: 2px solid var(--plane);
+}
+.menu__panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 40;
+  width: 250px;
+  max-width: 78vw;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.menu__section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.menu__label {
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Hoverable info hint ("i" in a circle) ----------------------------------- */
+.info {
+  position: relative;
+  display: inline-flex;
+}
+.info__dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 700;
+  font-style: italic;
+  display: grid;
+  place-items: center;
+  cursor: help;
+}
+.info__tip {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 50;
+  width: 210px;
+  background: var(--ink);
+  color: var(--plane);
+  font-size: 0.76rem;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s;
+}
+.info:hover .info__tip,
+.info:focus .info__tip,
+.info:focus-within .info__tip {
+  opacity: 1;
+}
+
+/* Weight input (menu) ----------------------------------------------------- */
+.weight-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.weight-input .input {
+  flex: 1;
+  min-width: 0;
+}
+.weight-input__unit {
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 0.9rem;
+}

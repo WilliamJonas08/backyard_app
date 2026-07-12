@@ -2,7 +2,7 @@
    Admin / super-admin passwords are kept in sessionStorage (cleared when the
    browser closes) and sent as headers on protected calls. */
 
-const API = (() => {
+export const API = (() => {
   const ADMIN_KEY = "backyard_admin_pw";
   const SUPER_KEY = "backyard_super_pw";
 

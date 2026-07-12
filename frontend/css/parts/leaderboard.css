@@ -1,0 +1,99 @@
+/* Leaderboard — ranked runner rows */
+
+/* Leaderboard ------------------------------------------------------------- */
+.leaderboard {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.lb-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  text-align: left;
+  width: 100%;
+  font-family: inherit;
+  color: inherit;
+}
+.lb-row.is-selected {
+  border-color: var(--accent-text);
+  background: var(--accent-dim);
+}
+.lb-row__rank {
+  width: 28px;
+  text-align: center;
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.lb-row--1 .lb-row__rank {
+  color: var(--gold);
+}
+.lb-row--2 .lb-row__rank {
+  color: var(--silver);
+}
+.lb-row--3 .lb-row__rank {
+  color: var(--bronze);
+}
+.lb-row__badge {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 0.86rem;
+  background: var(--line);
+  color: var(--ink);
+  flex-shrink: 0;
+}
+.lb-row--1 .lb-row__badge {
+  background: var(--gold);
+  color: var(--accent-ink);
+}
+.lb-row--2 .lb-row__badge {
+  background: var(--silver);
+  color: var(--accent-ink);
+}
+.lb-row--3 .lb-row__badge {
+  background: var(--bronze);
+  color: var(--accent-ink);
+}
+.lb-row__main {
+  flex: 1;
+  min-width: 0;
+}
+.lb-row__name {
+  font-weight: 700;
+  font-size: 0.96rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.lb-row__meta {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+}
+.lb-row__dist {
+  text-align: right;
+  font-weight: 800;
+  font-size: 1.02rem;
+  font-variant-numeric: tabular-nums;
+}
+.lb-row__dist small {
+  display: block;
+  font-weight: 600;
+  font-size: 0.68rem;
+  color: var(--muted);
+}

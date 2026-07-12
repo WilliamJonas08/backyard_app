@@ -1,0 +1,92 @@
+/* Base — palette, themes, reset and shared utilities */
+
+/* Backyard Race — dark & sporty, mobile-first theme.
+   Palette roles are defined once as custom properties, then referenced by role
+   throughout, following the data-viz color method (surfaces + ink + one accent).
+   Identity in charts is carried by direct labels, not by per-runner colors, so a
+   single accent hue is used consistently. */
+
+:root {
+  /* Surfaces & ink */
+  --plane: #0b0b0f;
+  --surface: #16161c;
+  --surface-2: #1e1e26;
+  --line: #26262f;
+  --grid: #232330;
+  --baseline: #33333f;
+
+  --ink: #ffffff;
+  --ink-2: #b9b9c6;
+  --muted: #7a7a88;
+
+  /* Accent (sporty lime) + supporting */
+  --accent: #c6ff3f; /* accent fills (dark text sits on top) */
+  --accent-text: #c6ff3f; /* accent used as text/border on a surface */
+  --accent-ink: #0b0b0f; /* text on accent fills */
+  --accent-dim: rgba(198, 255, 63, 0.16);
+  --gold: #f5c451;
+  --silver: #cfd3dd;
+  --bronze: #d8905a;
+
+  --danger: #e66767;
+  --bar-bg: rgba(11, 11, 15, 0.9); /* sticky topbar / tabbar background */
+  --radius: 18px;
+  --radius-sm: 12px;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --tabbar-h: 66px;
+
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  color-scheme: dark;
+}
+
+/* Light theme. Only the palette roles change; the lime accent stays as a fill,
+   while accent-as-text switches to a darker green that stays legible on light
+   surfaces. */
+:root[data-theme="light"] {
+  --plane: #f4f5f7;
+  --surface: #ffffff;
+  --surface-2: #eef0f4;
+  --line: #dde0e6;
+  --grid: #e7e9ef;
+  --baseline: #c9ccd4;
+
+  --ink: #14141a;
+  --ink-2: #4a4a55;
+  --muted: #7a7a88;
+
+  --accent-text: #4a7a00;
+  --accent-dim: rgba(120, 170, 0, 0.16);
+  --bar-bg: rgba(244, 245, 247, 0.85);
+  --shadow: 0 10px 30px rgba(20, 20, 30, 0.1);
+
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--plane);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+

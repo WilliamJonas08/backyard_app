@@ -1,0 +1,141 @@
+/* Charts — metric tabs, chart frame, speed-unit toggle, SVG elements */
+
+/* Metric tabs & chart ----------------------------------------------------- */
+.chart-hint {
+  margin: 0 0 12px;
+}
+.metric-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  margin-bottom: 12px;
+  scrollbar-width: none;
+}
+.metric-tabs::-webkit-scrollbar {
+  display: none;
+}
+.metric-tab {
+  white-space: nowrap;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  color: var(--ink-2);
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.metric-tab.is-active {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+}
+
+.chart-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+.chart {
+  width: 100%;
+  min-height: 240px;
+}
+.chart svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.chart-caption {
+  margin: 10px 2px 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+/* Speed-unit toggle ------------------------------------------------------- */
+.unit-toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.unit-toggle__label {
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+.segmented--sm {
+  flex: 0 0 auto;
+}
+.segmented--sm button {
+  flex: 0 0 auto;
+  padding: 7px 14px;
+  font-size: 0.82rem;
+}
+
+/* The gourmandise products have long labels: stack the control and let the
+   pills wrap onto several rows instead of overflowing. */
+#gourmandise-toggle {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+#gourmandise-product {
+  flex-wrap: wrap;
+}
+
+/* Chart SVG elements ------------------------------------------------------ */
+.ch-grid {
+  stroke: var(--grid);
+  stroke-width: 1;
+}
+.ch-ylabel,
+.ch-xlabel {
+  fill: var(--muted);
+  font-size: 11px;
+  font-family: var(--font);
+  font-variant-numeric: tabular-nums;
+}
+.ch-axis-title {
+  fill: var(--muted);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  font-family: var(--font);
+}
+.ch-line {
+  fill: none;
+  stroke: var(--ink-2);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.ch-line--sel {
+  stroke: var(--accent-text);
+  stroke-width: 2.5;
+}
+.ch-dot {
+  fill: var(--ink-2);
+}
+.ch-dot--sel {
+  fill: var(--accent-text);
+}
+.ch-end {
+  fill: var(--surface-2);
+  stroke: var(--ink-2);
+  stroke-width: 1.5;
+}
+.ch-end--sel {
+  fill: var(--accent);
+  stroke: var(--accent);
+}
+.ch-initials {
+  fill: var(--ink);
+  font-size: 8.5px;
+  font-weight: 800;
+  font-family: var(--font);
+  letter-spacing: 0.02em;
+}
+.ch-initials--sel {
+  fill: var(--accent-ink);
+}

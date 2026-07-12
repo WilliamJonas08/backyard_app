@@ -2,7 +2,7 @@
    Products and their calorie equivalents are configured here so they are easy
    to tweak without touching the chart logic. */
 
-const GOURMANDISE = (() => {
+export const GOURMANDISE = (() => {
   // Kilocalories per unit of each treat.
   const PRODUCTS = [
     { key: "pinte", emoji: "🍺", label: "Pinte", kcal: 220 },

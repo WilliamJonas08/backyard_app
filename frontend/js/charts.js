@@ -6,7 +6,7 @@
    tell apart; selecting a runner switches back to one accent hue with the rest
    dimmed. */
 
-const Charts = (() => {
+export const Charts = (() => {
   const NS = "http://www.w3.org/2000/svg";
   const W = 640;
   const H = 300;

@@ -1,0 +1,193 @@
+/* Layout — app shell, topbar, live badge, view container, tab bar, toast */
+
+/* Layout ------------------------------------------------------------------ */
+.app {
+  max-width: 620px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: calc(env(safe-area-inset-top) + 14px) 20px 14px;
+  gap: 12px;
+  background: var(--bar-bg);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+}
+
+.topbar__brand {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+/* The logo is a circular badge on a black square; the round clip drops the
+   black corners so it blends into the dark topbar without editing the file. */
+.topbar__logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.topbar__titles {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+  min-width: 0;
+}
+.topbar__name {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-size: 1.05rem;
+}
+.topbar__sub {
+  color: var(--muted);
+  font-size: 0.74rem;
+}
+
+.live {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--accent-text);
+  padding: 5px 10px;
+  border: 1px solid var(--accent-dim);
+  border-radius: 999px;
+}
+.live__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent-text);
+  box-shadow: 0 0 0 0 rgba(198, 255, 63, 0.6);
+  animation: pulse 1.8s infinite;
+}
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(198, 255, 63, 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 7px rgba(198, 255, 63, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(198, 255, 63, 0);
+  }
+}
+
+.content {
+  flex: 1;
+  padding: 18px 16px calc(var(--tabbar-h) + env(safe-area-inset-bottom) + 24px);
+}
+
+.view {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: fade 0.25s ease;
+}
+@keyframes fade {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+/* Tab bar ----------------------------------------------------------------- */
+.tabbar {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 620px;
+  height: calc(var(--tabbar-h) + env(safe-area-inset-bottom));
+  padding-bottom: env(safe-area-inset-bottom);
+  display: flex;
+  background: var(--bar-bg);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--line);
+  z-index: 30;
+}
+.tab {
+  flex: 1;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-family: inherit;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  transition: color 0.15s;
+}
+.tab__icon {
+  font-size: 1.2rem;
+  filter: grayscale(1) opacity(0.6);
+  transition: filter 0.15s;
+}
+.tab__label {
+  font-size: 0.68rem;
+  font-weight: 600;
+}
+.tab.is-active {
+  color: var(--accent-text);
+}
+.tab.is-active .tab__icon {
+  filter: none;
+}
+
+/* Toast ------------------------------------------------------------------- */
+.toast {
+  position: fixed;
+  bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom) + 16px);
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--ink);
+  color: var(--plane);
+  padding: 12px 20px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  box-shadow: var(--shadow);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s, transform 0.25s;
+  z-index: 50;
+  max-width: 90%;
+  text-align: center;
+}
+.toast.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+.toast--error {
+  background: var(--danger);
+  color: #fff;
+}
+
+/* Desktop fallback -------------------------------------------------------- */
+@media (min-width: 720px) {
+  .app {
+    max-width: 720px;
+    border-left: 1px solid var(--line);
+    border-right: 1px solid var(--line);
+  }
+  .hero__title {
+    font-size: 2.3rem;
+  }
+}
