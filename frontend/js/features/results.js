@@ -5,7 +5,7 @@ import { API } from "../api.js";
 import { Charts } from "../charts.js";
 import { GOURMANDISE } from "../gourmandise.js";
 import { state, METRICS, SPEED_UNITS } from "../core/state.js";
-import { $, formatDuration, toast, escapeHtml } from "../core/dom.js";
+import { $, toast, escapeHtml } from "../core/dom.js";
 
 export async function refreshResults() {
   try {
@@ -46,7 +46,7 @@ export function renderLeaderboard() {
         <span class="lb-row__name">${escapeHtml(entry.participant.name)}</span>
         <span class="lb-row__meta">${entry.loops_completed} boucle${
       entry.loops_completed > 1 ? "s" : ""
-    } · ${formatDuration(entry.total_time_seconds)}${
+    }${
       entry.avg_speed_kmh ? " · " + entry.avg_speed_kmh.toFixed(1) + " km/h" : ""
     }</span>
       </span>

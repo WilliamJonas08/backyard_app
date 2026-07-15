@@ -73,10 +73,11 @@ def build_leaderboard(
     results: list[LoopResult],
     event: EventConfig,
 ) -> list[LeaderboardEntry]:
-    """Rank runners: loops completed → total distance → total time.
+    """Rank runners: loops completed → average speed over all loops run.
 
     More loops always wins (backyard spirit). Ties break on the greater
-    cumulative distance, then on the shorter total time.
+    average speed. Distance is deliberately not a criterion: it would favour
+    runners who pick the longer loop, so we compare pace instead of kilometres.
     """
     by_participant = _group_results(results)
     unranked: list[LeaderboardEntry] = []
@@ -101,8 +102,7 @@ def build_leaderboard(
     unranked.sort(
         key=lambda e: (
             -e.loops_completed,
-            -e.total_distance_km,
-            e.total_time_seconds if e.total_time_seconds else float("inf"),
+            -(e.avg_speed_kmh or 0),
         )
     )
     for position, entry in enumerate(unranked, start=1):
