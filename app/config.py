@@ -71,15 +71,18 @@ DEFAULT_EVENT = EventConfig(
         LoopType(key="6.5km", label="Gros mollet (6,5 km)", distance_km=6.5, map_id="1597473"),
     ],
     presentation=(
-        "Bienvenue à la Backyard ! Le principe est simple : une journée conviviale et sportive entre copains avec un départ sur une boucle à chaque heure, jusqu'à 10 boucles ! "
-        "Tu choisis initialement ta boucle au début de l'évènement (petit ou gros mollet) et tu pourras éventuellement changer ou te reposer à certains moments. " 
-        "À toi de gérer ton effort et de grimper au classement au fil de la journée !"
+        "Bienvenue à la Backyard les potes ! Le principe est simple : une journée conviviale et sportive entre copains avec un départ sur une boucle à chaque heure, jusqu'à 10 boucles ! "
+        "Tu choisis initialement ta boucle au début de l'évènement (petit ou gros mollet), puis tu pourras éventuellement passer à la boucle de distance inférieure au besoin. "
+        "⚠️ Si tu ne finis pas la boucle en 1H ou que tu t’arrêtes, c’est la fin et tu passes à l’apéro ! " 
+        "Entre chaque boucle on se ravitaille: tite biere, tite pompote toussa ! "
+        "À toi de gérer ton effort et de grimper au classement au fil de la journée ! (cf onglet '📊 Resultats')"
     ),
     todolist=[
         "Inscris-toi avec ton prénom et nom.",
-        "Au top de chaque heure, pars pour ta boucle (ou repose-toi).",
+        "Au top de chaque heure, pars pour ta boucle.",
         "À la fin de ta boucle, va voir un·e 'admin' avec ton temps et ta boucle.",
         "L'admin enregistre ton résultat : suis le classement en live !",
+        "Repose, mange et hydrates toi !",
     ],
 )
 
